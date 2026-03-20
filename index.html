@@ -1,0 +1,25 @@
+<div id="app" style="text-align:center; font-family:sans-serif;">
+  <h2>30-Day Sprint: Day <span id="dayCount">0</span>/30</h2>
+  <div id="progress" style="width:80%; height:30px; background:#eee; margin:auto;">
+    <div id="bar" style="width:0%; height:100%; background:limegreen;"></div>
+  </div>
+  <button onclick="completeDay()" style="margin-top:20px; padding:15px 30px; font-size:18px;">
+    Done with 30 Mins!
+  </button>
+  <p id="message"></p>
+</div>
+
+<script>
+  let days = localStorage.getItem('sprintDays') || 0;
+  function updateUI() {
+    document.getElementById('dayCount').innerText = days;
+    document.getElementById('bar').style.width = (days/30 * 100) + '%';
+    if(days >= 30) document.getElementById('message').innerText = "🏆 CLAIM YOUR GRAND REWARD!";
+  }
+  function completeDay() {
+    days++;
+    localStorage.setItem('sprintDays', days);
+    updateUI();
+  }
+  updateUI();
+</script>
