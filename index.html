@@ -1,25 +1,208 @@
-<div id="app" style="text-align:center; font-family:sans-serif;">
-  <h2>30-Day Sprint: Day <span id="dayCount">0</span>/30</h2>
-  <div id="progress" style="width:80%; height:30px; background:#eee; margin:auto;">
-    <div id="bar" style="width:0%; height:100%; background:limegreen;"></div>
-  </div>
-  <button onclick="completeDay()" style="margin-top:20px; padding:15px 30px; font-size:18px;">
-    Done with 30 Mins!
-  </button>
-  <p id="message"></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>30-Day Sprint Pro</title>
+    <style>
+        :root {
+            --accent: #00f2fe;
+            --success: #00c853;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--text); 
+            display: flex; flex-direction: column; align-items: center; 
+            margin: 0; padding: 20px; box-sizing: border-box;
+        }
+        .app-container { width: 100%; max-width: 450px; }
+        
+        /* Header & Shield */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #shield { font-size: 40px; }
+        .shield-ok { filter: drop-shadow(0 0 10px var(--accent)); }
+        .shield-break { opacity: 0.3; grayscale: 1; }
+
+        /* Timer Section */
+        .timer-card { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px; border-radius: 24px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #timer-display { font-size: 64px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -2px; margin-bottom: 15px; }
+        
+        /* Calendar Grid */
+        .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 10px; font-weight: 700; }
+        .calendar-grid { 
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; 
+            background: var(--card); padding: 15px; border-radius: 16px; margin-bottom: 25px;
+        }
+        .day-cell { 
+            aspect-ratio: 1; border-radius: 8px; background: #334155; 
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #94a3b8;
+        }
+        .day-done { background: var(--success); color: white; box-shadow: 0 0 10px rgba(0,200,83,0.4); }
+
+        /* Wishlist Section */
+        .wishlist { background: var(--card); padding: 20px; border-radius: 16px; }
+        .wish-item { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .wish-label { font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 5px; }
+        input[type="text"] { 
+            background: rgba(0,0,0,0.2); border: 1px solid #334155; color: white; 
+            padding: 10px; border-radius: 8px; font-size: 14px; outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--accent); }
+
+        /* Buttons */
+        button { 
+            background: var(--accent); color: #000; border: none; padding: 16px; 
+            border-radius: 14px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+        .reset-link { color: #475569; font-size: 11px; text-align: center; margin-top: 20px; display: block; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <div>
+            <h1 style="margin:0; font-size: 24px;">My 30-Day Sprint</h1>
+            <div id="streak-count" style="color: var(--accent); font-weight: bold;">0 Day Streak</div>
+        </div>
+        <div id="shield" class="shield-ok">🛡️</div>
+    </div>
+
+    <div class="timer-card">
+        <div id="timer-display">30:00</div>
+        <button id="mainBtn" onclick="toggleTimer()">START EXERCISE</button>
+    </div>
+
+    <div class="section-title">Your Progress Calendar</div>
+    <div class="calendar-grid" id="calendar">
+        <!-- JS will generate 30 days here -->
+    </div>
+
+    <div class="section-title">Reward Wishlist (Click to Edit)</div>
+    <div class="wishlist">
+        <div class="wish-item">
+            <span class="wish-label">WEEK 1 REWARD (7 DAYS)</span>
+            <input type="text" id="reward-7" placeholder="e.g. Nice Dinner Out" onchange="saveRewards()">
+        </div>
+        <div class="wish-item">
+            <span class="wish-label">HALFWAY REWARD (15 DAYS)</span>
+            <input type="text" id="reward-15" placeholder="e.g. New Gym Shoes" onchange="saveRewards()">
+        </div>
+        <div class="wish-item">
+            <span class="wish-label">GRAND PRIZE (30 DAYS)</span>
+            <input type="text" id="reward-30" placeholder="e.g. Weekend Trip" onchange="saveRewards()">
+        </div>
+    </div>
+
+    <a href="#" class="reset-link" onclick="resetApp()">Reset All Data</a>
 </div>
 
 <script>
-  let days = localStorage.getItem('sprintDays') || 0;
-  function updateUI() {
-    document.getElementById('dayCount').innerText = days;
-    document.getElementById('bar').style.width = (days/30 * 100) + '%';
-    if(days >= 30) document.getElementById('message').innerText = "🏆 CLAIM YOUR GRAND REWARD!";
-  }
-  function completeDay() {
-    days++;
-    localStorage.setItem('sprintDays', days);
-    updateUI();
-  }
-  updateUI();
+    // Initialize Data
+    let data = JSON.parse(localStorage.getItem('sprintDataV2')) || {
+        completedDays: [], // Array of dates like "Mar 20 2024"
+        rewards: { 7: "", 15: "", 30: "" },
+        shieldIntact: true
+    };
+
+    let secondsLeft = 1800;
+    let timerInterval;
+    let isRunning = false;
+
+    function init() {
+        renderCalendar();
+        loadRewards();
+        updateHeader();
+    }
+
+    function renderCalendar() {
+        const calendar = document.getElementById('calendar');
+        calendar.innerHTML = '';
+        for (let i = 1; i <= 30; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `day-cell ${i <= data.completedDays.length ? 'day-done' : ''}`;
+            dayDiv.innerText = i;
+            calendar.appendChild(dayDiv);
+        }
+    }
+
+    function updateHeader() {
+        const streak = data.completedDays.length;
+        document.getElementById('streak-count').innerText = `${streak} / 30 Days Done`;
+        
+        // Disable button if done today
+        const today = new Date().toDateString();
+        if (data.completedDays.includes(today)) {
+            document.getElementById('mainBtn').innerText = "COMPLETED TODAY";
+            document.getElementById('mainBtn').disabled = true;
+            document.getElementById('timer-display').innerText = "DONE";
+        }
+    }
+
+    function toggleTimer() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            document.getElementById('mainBtn').innerText = "RESUME";
+        } else {
+            document.getElementById('mainBtn').innerText = "PAUSE";
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                updateTimerDisplay();
+                if (secondsLeft <= 0) finishDay();
+            }, 1000);
+        }
+        isRunning = !isRunning;
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        document.getElementById('timer-display').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function finishDay() {
+        clearInterval(timerInterval);
+        const today = new Date().toDateString();
+        if (!data.completedDays.includes(today)) {
+            data.completedDays.push(today);
+            localStorage.setItem('sprintDataV2', JSON.stringify(data));
+        }
+        alert("Day Complete! You are one step closer to your reward.");
+        location.reload();
+    }
+
+    function saveRewards() {
+        data.rewards[7] = document.getElementById('reward-7').value;
+        data.rewards[15] = document.getElementById('reward-15').value;
+        data.rewards[30] = document.getElementById('reward-30').value;
+        localStorage.setItem('sprintDataV2', JSON.stringify(data));
+    }
+
+    function loadRewards() {
+        document.getElementById('reward-7').value = data.rewards[7] || "";
+        document.getElementById('reward-15').value = data.rewards[15] || "";
+        document.getElementById('reward-30').value = data.rewards[30] || "";
+    }
+
+    function resetApp() {
+        if(confirm("Start your 30 days over?")) {
+            localStorage.removeItem('sprintDataV2');
+            location.reload();
+        }
+    }
+
+    init();
 </script>
+</body>
+</html>
