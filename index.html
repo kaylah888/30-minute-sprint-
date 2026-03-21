@@ -3,250 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>30-Day Sprint: Calendar Pro</title>
-    <!-- App Icon for iPhone -->
-<link rel="apple-touch-icon" href="https://img.icons8.com/fluency/240/lightning-bolt.png">
-<!-- App Icon for Android/Chrome -->
-<link rel="icon" type="image/png" href="https://img.icons8.com/fluency/240/lightning-bolt.png">
+    <title>Sprint 30</title>
 
-<!-- This makes the top bar of your phone match the app color -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sprint30">
+    <!-- 1. THE COOL ICON (Lightning Bolt) -->
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/240/lightning-bolt.png">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/240/lightning-bolt.png">
+
+    <!-- 2. HIDE WEBSITE ADDRESS BAR (Standalone Mode) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sprint 30">
+    <meta name="theme-color" content="#0f172a">
+
     <style>
-        :root {
-            --accent: #00f2fe;
-            --success: #00c853;
-            --bg: #0f172a;
-            --card: #1e293b;
-            --text: #f8fafc;
-            --today: #f59e0b;
-        }
+        :root { --accent: #00f2fe; --success: #00c853; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --today: #f59e0b; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            font-family: -apple-system, system-ui, sans-serif; 
             background: var(--bg); color: var(--text); 
-            display: flex; flex-direction: column; align-items: center; 
-            margin: 0; padding: 20px; box-sizing: border-box;
+            margin: 0; padding: 20px; 
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+            padding-top: env(safe-area-inset-top); /* Ensures content doesn't hit the iPhone notch */
         }
         .app-container { width: 100%; max-width: 450px; }
-        
-        /* Header & Streak */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 10px; }
         .streak-chip { background: rgba(0,242,254,0.1); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 13px; }
-
-        /* Timer Card */
+        
         .timer-card { 
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 25px; border-radius: 24px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            padding: 30px; border-radius: 28px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
         }
-        #timer-display { font-size: 50px; font-weight: 800; font-variant-numeric: tabular-nums; margin-bottom: 10px; }
+        #timer-display { font-size: 65px; font-weight: 800; font-variant-numeric: tabular-nums; margin-bottom: 15px; text-shadow: 0 0 20px rgba(0,242,254,0.4); }
         
-        /* Calendar UI */
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 10px; }
-        .cal-nav { background: none; border: 1px solid #334155; color: white; padding: 5px 10px; border-radius: 8px; width: auto; font-size: 14px; }
-        
-        .calendar-grid { 
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; 
-            background: var(--card); padding: 12px; border-radius: 16px; margin-bottom: 20px;
-        }
-        .weekday { font-size: 10px; color: #64748b; font-weight: 800; text-align: center; margin-bottom: 5px; }
-        .day-cell { 
-            aspect-ratio: 1; border-radius: 10px; background: #334155; 
-            display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; position: relative;
-        }
-        .day-done { background: var(--success) !important; color: white; box-shadow: 0 0 10px rgba(0,200,83,0.3); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--card); padding: 15px; border-radius: 20px; margin-bottom: 25px; }
+        .day-cell { aspect-ratio: 1; border-radius: 10px; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        .day-done { background: var(--success) !important; color: white; box-shadow: 0 0 10px rgba(0,200,83,0.4); }
         .day-today { border: 2px solid var(--today); color: var(--today); }
         .day-empty { background: transparent; }
-
-        /* Wishlist */
-        .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px; font-weight: 700; }
-        .wishlist { background: var(--card); padding: 18px; border-radius: 16px; margin-bottom: 20px; }
-        .wish-item { margin-bottom: 12px; }
-        .wish-label { font-size: 10px; color: var(--accent); font-weight: 800; display: block; margin-bottom: 4px; }
-        input[type="text"] { 
-            background: rgba(0,0,0,0.2); border: 1px solid #334155; color: white; 
-            padding: 8px 12px; border-radius: 10px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box;
-        }
-
-        button { 
-            background: var(--accent); color: #000; border: none; padding: 14px; 
-            border-radius: 14px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer;
-        }
+        
+        .wishlist { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 25px; }
+        .wish-label { font-size: 10px; color: var(--accent); font-weight: 800; display: block; margin-bottom: 5px; letter-spacing: 1px; }
+        input[type="text"] { background: rgba(0,0,0,0.3); border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; width: 100%; box-sizing: border-box; outline: none; font-size: 15px; }
+        
+        button { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 18px; font-size: 18px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.96); }
         button:disabled { background: #334155; color: #64748b; }
-        .reset-link { color: #475569; font-size: 11px; text-align: center; width: 100%; display: block; margin-top: 10px; }
+        
+        .cal-header { display: flex; justify-content: space-between; margin: 15px 0; align-items: center; font-weight: 900; color: #94a3b8; }
+        .nav-btn { font-size: 20px; padding: 0 15px; cursor: pointer; color: var(--accent); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <h1 style="margin:0; font-size: 20px;">Sprint Calendar</h1>
+        <h1 style="margin:0; font-size: 24px; letter-spacing: -1px;">Sprint 30</h1>
         <div id="streak-count" class="streak-chip">0 Days Done</div>
     </div>
 
+    <!-- Timer Section (Calculates based on Clock time for background use) -->
     <div class="timer-card">
         <div id="timer-display">30:00</div>
-        <button id="mainBtn" onclick="toggleTimer()">START EXERCISE</button>
+        <button id="mainBtn" onclick="toggleTimer()">START WORKOUT</button>
     </div>
 
+    <!-- Real Calendar Grid -->
     <div class="cal-header">
-        <button class="cal-nav" onclick="changeMonth(-1)">❮</button>
-        <div id="month-name" style="font-weight: 800;">March 2026</div>
-        <button class="cal-nav" onclick="changeMonth(1)">❯</button>
+        <span class="nav-btn" onclick="changeMonth(-1)">❮</span>
+        <span id="month-name">March 2026</span>
+        <span class="nav-btn" onclick="changeMonth(1)">❯</span>
     </div>
+    <div class="calendar-grid" id="calendar"></div>
 
-    <div class="calendar-grid" id="calendar">
-        <!-- Weekdays & Days generated by JS -->
-    </div>
-
-    <div class="section-title">Rewards Wishlist</div>
+    <!-- Editable Wishlist -->
     <div class="wishlist">
-        <div class="wish-item">
-            <span class="wish-label">7 DAY REWARD</span>
-            <input type="text" id="reward-7" placeholder="Add treat..." onchange="saveRewards()">
-        </div>
-        <div class="wish-item">
-            <span class="wish-label">30 DAY GRAND PRIZE</span>
-            <input type="text" id="reward-30" placeholder="Add major prize..." onchange="saveRewards()">
-        </div>
+        <span class="wish-label">MY 30-DAY GRAND PRIZE</span>
+        <input type="text" id="reward-30" placeholder="What are you working for?" onchange="saveRewards()">
     </div>
-
-    <a href="#" class="reset-link" onclick="resetApp()">Reset All History</a>
+    
+    <p style="text-align:center; font-size: 11px; color: #475569; text-decoration: underline;" onclick="resetApp()">Reset All Progress</p>
 </div>
 
 <script>
-    // Set fixed start date or use current
-    let currentViewDate = new Date(2026, 2, 1); // March 2026
-    const REAL_TODAY = new Date(); // In your system, this is Mar 21, 2026
-
-    let data = JSON.parse(localStorage.getItem('sprintCalendarData')) || {
-        completedDates: [], // Stores strings like "2026-03-21"
-        rewards: { 7: "", 30: "" }
+    let currentViewDate = new Date(2026, 2, 1); // Starts at March 2026
+    const REAL_TODAY = new Date(); // System date
+    
+    let data = JSON.parse(localStorage.getItem('sprintDataFinal')) || {
+        completedDates: [],
+        reward: "",
+        endTime: null,
+        isPaused: true,
+        timeLeftWhenPaused: 1800000 // 30 minutes in milliseconds
     };
 
-    let secondsLeft = 1800;
     let timerInterval;
-    let isRunning = false;
 
     function init() {
         renderCalendar();
-        loadRewards();
+        document.getElementById('reward-30').value = data.reward || "";
         updateUI();
+        
+        // Background Persistence Logic:
+        // If the app is opened and the timer was NOT paused, resume based on the saved endTime
+        if (!data.isPaused && data.endTime) {
+            startInterval();
+        } else {
+            updateTimerDisplay(data.timeLeftWhenPaused);
+        }
     }
 
     function renderCalendar() {
         const cal = document.getElementById('calendar');
         cal.innerHTML = '';
-        const month = currentViewDate.getMonth();
-        const year = currentViewDate.getFullYear();
+        const m = currentViewDate.getMonth();
+        const y = currentViewDate.getFullYear();
+        document.getElementById('month-name').innerText = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric'}).format(currentViewDate);
         
-        document.getElementById('month-name').innerText = 
-            new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentViewDate);
+        const firstDay = new Date(y, m, 1).getDay();
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
 
-        // Add Weekday Headers
-        ['S','M','T','W','T','F','S'].forEach(day => {
-            const d = document.createElement('div');
-            d.className = 'weekday'; d.innerText = day; cal.appendChild(d);
-        });
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // Empty cells for month start
-        for (let i = 0; i < firstDay; i++) {
-            const empty = document.createElement('div');
-            empty.className = 'day-cell day-empty';
-            cal.appendChild(empty);
+        for (let i=0; i<firstDay; i++) cal.innerHTML += '<div class="day-cell day-empty"></div>';
+        
+        for (let i=1; i<=daysInMonth; i++) {
+            const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const isDone = data.completedDates.includes(dateStr);
+            const isToday = dateStr === getLocalDateStr(REAL_TODAY);
+            cal.innerHTML += `<div class="day-cell ${isDone?'day-done':''} ${isToday?'day-today':''}">${i}</div>`;
         }
-
-        // Days of month
-        for (let i = 1; i <= daysInMonth; i++) {
-            const cell = document.createElement('div');
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            cell.className = 'day-cell';
-            cell.innerText = i;
-
-            if (data.completedDates.includes(dateStr)) cell.classList.add('day-done');
-            if (dateStr === getLocalDateStr(REAL_TODAY)) cell.classList.add('day-today');
-
-            cal.appendChild(cell);
-        }
-    }
-
-    function getLocalDateStr(date) {
-        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-    }
-
-    function changeMonth(dir) {
-        currentViewDate.setMonth(currentViewDate.getMonth() + dir);
-        renderCalendar();
     }
 
     function toggleTimer() {
-        if (isRunning) {
+        if (data.isPaused) {
+            // START
+            data.isPaused = false;
+            // Set the end target to "Now + whatever time was left"
+            data.endTime = Date.now() + data.timeLeftWhenPaused;
+            startInterval();
+            if ('wakeLock' in navigator) navigator.wakeLock.request('screen');
+        } else {
+            // PAUSE
+            data.isPaused = true;
+            data.timeLeftWhenPaused = data.endTime - Date.now();
             clearInterval(timerInterval);
             document.getElementById('mainBtn').innerText = "RESUME";
-        } else {
-            document.getElementById('mainBtn').innerText = "PAUSE";
-            timerInterval = setInterval(() => {
-                secondsLeft--;
-                updateTimerDisplay();
-                if (secondsLeft <= 0) finishDay();
-            }, 1000);
         }
-        isRunning = !isRunning;
+        save();
     }
 
-    function updateTimerDisplay() {
-        const mins = Math.floor(secondsLeft / 60);
-        const secs = secondsLeft % 60;
+    function startInterval() {
+        document.getElementById('mainBtn').innerText = "PAUSE";
+        timerInterval = setInterval(() => {
+            const remaining = data.endTime - Date.now();
+            if (remaining <= 0) {
+                finishDay();
+            } else {
+                updateTimerDisplay(remaining);
+            }
+        }, 500);
+    }
+
+    function updateTimerDisplay(ms) {
+        const totalSecs = Math.max(0, Math.floor(ms / 1000));
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
         document.getElementById('timer-display').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     function finishDay() {
         clearInterval(timerInterval);
         const todayStr = getLocalDateStr(REAL_TODAY);
-        if (!data.completedDates.includes(todayStr)) {
-            data.completedDates.push(todayStr);
-            localStorage.setItem('sprintCalendarData', JSON.stringify(data));
-        }
-        alert("Day Complete! 🏆 Check your calendar.");
+        if (!data.completedDates.includes(todayStr)) data.completedDates.push(todayStr);
+        data.isPaused = true;
+        data.timeLeftWhenPaused = 1800000;
+        data.endTime = null;
+        save();
+        alert("30 MINUTES DONE! 🏆 Your progress is saved.");
         location.reload();
     }
 
+    function getLocalDateStr(date) {
+        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    }
+
+    function save() { localStorage.setItem('sprintDataFinal', JSON.stringify(data)); }
+    function saveRewards() { data.reward = document.getElementById('reward-30').value; save(); }
+    function changeMonth(dir) { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); }
+    
     function updateUI() {
-        const total = data.completedDates.length;
-        document.getElementById('streak-count').innerText = `${total} Days Done`;
-        
+        document.getElementById('streak-count').innerText = `${data.completedDates.length} Days Done`;
         const todayStr = getLocalDateStr(REAL_TODAY);
         if (data.completedDates.includes(todayStr)) {
             document.getElementById('mainBtn').disabled = true;
-            document.getElementById('mainBtn').innerText = "DONE TODAY";
-            document.getElementById('timer-display').innerText = "00:00";
+            document.getElementById('mainBtn').innerText = "DAY COMPLETE";
+            document.getElementById('timer-display').innerText = "DONE";
         }
     }
 
-    function saveRewards() {
-        data.rewards[7] = document.getElementById('reward-7').value;
-        data.rewards[30] = document.getElementById('reward-30').value;
-        localStorage.setItem('sprintCalendarData', JSON.stringify(data));
-    }
-
-    function loadRewards() {
-        document.getElementById('reward-7').value = data.rewards[7] || "";
-        document.getElementById('reward-30').value = data.rewards[30] || "";
-    }
-
-    function resetApp() {
-        if(confirm("Wipe all exercise data and start over?")) {
-            localStorage.removeItem('sprintCalendarData');
-            location.reload();
-        }
-    }
+    function resetApp() { if(confirm("This will delete your history and restart your 30 days. Are you sure?")) { localStorage.clear(); location.reload(); } }
 
     init();
 </script>
